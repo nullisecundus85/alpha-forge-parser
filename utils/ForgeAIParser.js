@@ -7,6 +7,7 @@ import { Alert } from 'react-native';
 export const pickPdfFile = async () => {
   try {
     const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
+    console.log("📄 File selected:", result);
     if (result.type === 'success' && result.name.endsWith('.pdf')) {
       return result;
     } else {
@@ -46,7 +47,14 @@ export const parsePdf = async (uri) => {
       body: JSON.stringify({ base64 }),
     });
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+      console.log("📨 Parser response JSON:", result);
+    } catch (jsonErr) {
+      console.error("❌ Failed to parse JSON response:", jsonErr);
+      throw new Error("Invalid JSON returned from parser");
+    }
 
     if (!response.ok) {
       throw new Error(result?.message || 'Failed to parse PDF');
