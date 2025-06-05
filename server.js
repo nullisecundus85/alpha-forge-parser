@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer';
 import express from 'express';
 import cors from 'cors';
 import aiInterpreter from './aiInterpreter.js';
@@ -7,7 +6,6 @@ const app = express();
 const PORT = 3001;
 
 app.use(cors());
-app.use(express.json());
 app.use(express.json({ limit: '50mb' }));
 
 // Helper to decode base64 PDF and extract text
@@ -38,5 +36,5 @@ app.post('/api/parse-pdf', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 PDF Parser API running at http://localhost:${PORT}`);
+  console.log(`🚀 PDF Parser API live on Render at PORT ${PORT}`);
 });
