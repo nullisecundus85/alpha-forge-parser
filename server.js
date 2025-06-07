@@ -35,6 +35,40 @@ app.post('/api/parse-pdf', async (req, res) => {
   }
 });
 
+// Route to handle ForgeGPT chat requests
+app.post('/api/forgegpt', async (req, res) => {
+  try {
+    const { messages } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid request format' });
+    }
+
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+      }),
+    });
+
+    const data = await openaiResponse.json();
+
+    if (!data.choices || !data.choices.length) {
+      return res.status(500).json({ error: 'No response from OpenAI' });
+    }
+
+    res.json({ reply: data.choices[0].message.content });
+  } catch (err) {
+    console.error('❌ ForgeGPT Error:', err);
+    res.status(500).json({ error: 'Failed to process chat message' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 PDF Parser API live on Render at PORT ${PORT}`);
 });
